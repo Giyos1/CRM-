@@ -1,5 +1,5 @@
 from rest_framework import serializers, validators
-from .models import Course, Account
+from .models import Course, Account, Payment
 
 
 class CourseSerializers(serializers.ModelSerializer):
@@ -12,4 +12,10 @@ class AccountSerializers(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = "__all__"
-        depth = 1
+
+
+class PaymentSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = "__all__"
+
