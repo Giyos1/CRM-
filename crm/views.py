@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import CourseSerializers, AccountSerializers, PaymentSerializers
-from .models import Course, Account, Payment
+from .models import Course, Account
 
 
 class CourseList(ListAPIView):
