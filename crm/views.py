@@ -40,3 +40,9 @@ class PaymentAccountView(APIView):
             dict_['accounts'] = acc_serializers.data
             list_.append(dict_)
         return Response(data=list_)
+
+    def post(self,request):
+        serializer = PaymentSerializers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serializer.data)
