@@ -26,3 +26,17 @@ class CourseDetail(APIView):
             list_.append(dict_)
 
         return Response(data=list_)
+
+
+class PaymentAccountView(APIView):
+    def get(self, request):
+        list_ = []
+        course = Course.objects.all()
+        course_serializers = CourseSerializers(course, many=True)
+        for course in course_serializers.data:
+            acoounts = Account.objects.filter(course_id=course['id'])
+            acc_serializers = AccountSerializers(acoounts, many=True)
+            dict_ = dict(course)
+            dict_['accounts'] = acc_serializers.data
+            list_.append(dict_)
+        return Response(data=list_)
