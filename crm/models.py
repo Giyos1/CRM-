@@ -11,13 +11,14 @@ class Course(models.Model):
     total_price = models.IntegerField()
     channel_id = models.CharField(max_length=200)
     lesson_number = models.IntegerField()
+    number_student = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name
 
 
 class Account(models.Model):
-    account_id = models.CharField(max_length=200)
+    account_id = models.CharField(max_length=200, null=True, blank=True)
     username = models.CharField(max_length=200)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)

@@ -7,5 +7,6 @@ urlpatterns = [
     path('payment/', views.PaymentAccountView.as_view(), name='payment'),
     path('account/<int:pk>/edit/', views.AccountEditView.as_view(), name='edit'),
     path('account/<int:pk>/paymenthistory/', views.PaymentHistoryView.as_view(), name='paymenthistory'),
+    path('payment/<int:pk>/edit/', views.PaymentEditView.as_view(), name = 'payment-edit')
 
 ]

@@ -70,3 +70,18 @@ class PaymentHistoryView(APIView):
         payment = Payment.objects.filter(account=account)
         serializers = PaymentSerializers(payment, many=True)
         return Response(data=serializers.data)
+
+
+class PaymentEditView(APIView):
+    def get(self, request, pk):
+        payment = Payment.objects.get(id=pk)
+        serializers = PaymentSerializers(payment)
+        return Response(data=serializers.data)
+
+    def put(self, request, pk):
+        payment = Payment.objects.get(id=pk)
+        serializer = PaymentSerializers(payment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
