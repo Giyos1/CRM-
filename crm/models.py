@@ -31,6 +31,7 @@ class Account(models.Model):
 
 
 class Payment(models.Model):
+    title = models.TextField(default='Kurs uchun tolov')
     price = models.IntegerField()
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='payment')
     created_at = models.DateTimeField(auto_now_add=True)

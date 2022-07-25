@@ -1,8 +1,9 @@
+from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import CourseSerializers, AccountSerializers, PaymentSerializers
-from .models import Course, Account
+from .models import Course, Account, Payment
 
 
 class CourseList(ListAPIView):
@@ -41,8 +42,31 @@ class PaymentAccountView(APIView):
             list_.append(dict_)
         return Response(data=list_)
 
-    def post(self,request):
+    def post(self, request):
         serializer = PaymentSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data)
+
+
+class AccountEditView(APIView):
+    def get(self, request, pk):
+        account = Account.objects.get(id=pk)
+        serializer = AccountSerializers(account)
+        return Response(data=serializer.data)
+
+    def put(self, request, pk):
+        account = Account.objects.get(id=pk)
+        serializer = AccountSerializers(account, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PaymentHistoryView(APIView):
+    def get(self, request, pk):
+        account = Account.objects.get(id=pk)
+        payment = Payment.objects.filter(account=account)
+        serializers = PaymentSerializers(payment, many=True)
+        return Response(data=serializers.data)
