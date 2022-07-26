@@ -97,9 +97,9 @@ class UnknownAccountView(APIView):
         for course in course_serializers.data:
             acoounts = Account.objects.filter(course_id=course['id'], first_name__contains='unknown',
                                               last_name__contains='unknown', phone_number__contains='unknown')
-            print(acoounts.filter(first_name__contains='unknown'))
             acc_serializers = AccountSerializers(acoounts, many=True)
             dict_ = dict(course)
+            dict_['unknown_count'] = acoounts.count()
             dict_['accounts'] = acc_serializers.data
             list_.append(dict_)
         return Response(data=list_)
