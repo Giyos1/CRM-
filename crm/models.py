@@ -28,6 +28,8 @@ class Account(models.Model):
     left = models.DateField(default=timezone.now)
     oquvchi_narxi = models.IntegerField(null=True, blank=True)
     start_course = models.IntegerField(null=True, blank=True, default=1)
+    delete = models.BooleanField(default=False)
+    delete_cause = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.username}({self.course.name})"

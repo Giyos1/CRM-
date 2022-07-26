@@ -42,12 +42,11 @@ class PaymentAccountView(APIView):
             list_.append(dict_)
         return Response(data=list_)
 
-
-def post(self, request):
-    serializer = PaymentSerializers(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    return Response(data=serializer.data)
+    def post(self, request):
+        serializer = PaymentSerializers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serializer.data)
 
 
 class AccountEditView(APIView):
@@ -118,3 +117,18 @@ class CourseLeaveView(APIView):
             dict_['leave_account'] = number
             list_.append(dict_)
         return Response(data=list_)
+
+
+class SwappingCourseAccountView(APIView):
+    def get(self, request, pk):
+        courses = Course.objects.all()
+        serializers = CourseSerializers(courses, many=True)
+        return Response(data=serializers.data)
+
+    def put(self, request, pk):
+        account = Account.objects.get(id=pk)
+        serializer = AccountSerializers(account, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

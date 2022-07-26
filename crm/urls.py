@@ -11,4 +11,6 @@ urlpatterns = [
     path('unknownaccount/', views.UnknownAccountView.as_view(), name='unknown'),
     path('leaveaccount/', views.CourseLeaveView.as_view(), name='leave-account'),
 
+    path('swapping/account/<int:pk>/', views.SwappingCourseAccountView.as_view(), name='swapping')
+
 ]
