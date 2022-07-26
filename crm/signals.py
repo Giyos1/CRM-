@@ -13,10 +13,12 @@ def creat_course(sender, instance, created, **kwargs):
                 phone_number='Unknown',
                 course=instance
             )
-    else:
-        number = Account.objects.count()
-        number -= instance.number_student
+    elif not created:
+        number = Account.objects.filter(course=instance).count()
+        number = instance.number_student - number
+        print(number)
         if number > 0:
+            print(2)
             for i in range(number):
                 Account.objects.create(
                     first_name='Unknown',
@@ -24,3 +26,11 @@ def creat_course(sender, instance, created, **kwargs):
                     phone_number='Unknown',
                     course=instance
                 )
+
+
+@receiver(post_save, sender=Account)
+def create_account(sender, instance, created, **kwargs):
+    if created:
+        instance.start_course = instance.course.lesson_number / 12 + 1
+        instance.oquvchi_narxi = instance.course.total_price
+        instance.save()

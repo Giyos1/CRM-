@@ -26,6 +26,8 @@ class Account(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='account')
     join = models.DateField(default=timezone.now)
     left = models.DateField(default=timezone.now)
+    oquvchi_narxi = models.IntegerField(null=True, blank=True)
+    start_course = models.IntegerField(null=True, blank=True, default=1)
 
     def __str__(self):
         return f"{self.username}({self.course.name})"
