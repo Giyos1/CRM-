@@ -42,11 +42,12 @@ class PaymentAccountView(APIView):
             list_.append(dict_)
         return Response(data=list_)
 
-    def post(self, request):
-        serializer = PaymentSerializers(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(data=serializer.data)
+
+def post(self, request):
+    serializer = PaymentSerializers(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(data=serializer.data)
 
 
 class AccountEditView(APIView):
@@ -85,3 +86,35 @@ class PaymentEditView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UnknownAccountView(APIView):
+    def get(self, request):
+        list_ = []
+        course = Course.objects.filter()
+        course_serializers = CourseSerializers(course, many=True)
+        print(course_serializers.data)
+
+        for course in course_serializers.data:
+            acoounts = Account.objects.filter(course_id=course['id'], first_name__contains='unknown',
+                                              last_name__contains='unknown', phone_number__contains='unknown')
+            print(acoounts.filter(first_name__contains='unknown'))
+            acc_serializers = AccountSerializers(acoounts, many=True)
+            dict_ = dict(course)
+            dict_['accounts'] = acc_serializers.data
+            list_.append(dict_)
+        return Response(data=list_)
+
+
+class CourseLeaveView(APIView):
+    def get(self, request):
+        list_ = []
+        courses = Course.objects.all()
+        serializers = CourseSerializers(courses, many=True)
+        for i in serializers.data:
+            number = Account.objects.filter(course_id=i['id']).count()
+            number -= i['number_student']
+            dict_ = dict(i)
+            dict_['leave_account'] = number
+            list_.append(dict_)
+        return Response(data=list_)
