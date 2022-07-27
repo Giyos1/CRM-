@@ -6,6 +6,14 @@ def validate_price(value):
     pass
 
 
+class DeletedManager(models.Manager):
+
+    def get_queryset(self):
+        return super(DeletedManager,
+                     self).get_queryset() \
+            .filter(delete=False)
+
+
 class Course(models.Model):
     name = models.CharField(max_length=200)
     total_price = models.IntegerField()
@@ -30,6 +38,8 @@ class Account(models.Model):
     start_course = models.IntegerField(null=True, blank=True, default=1)
     delete = models.BooleanField(default=False)
     delete_cause = models.TextField(null=True, blank=True, default=' ')
+    objects = models.Manager()
+    nodeleted = DeletedManager()
 
     def __str__(self):
         return f"{self.username}({self.course.name})"

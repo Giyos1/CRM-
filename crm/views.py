@@ -14,11 +14,11 @@ class CourseList(ListAPIView):
 class CourseDetail(APIView):
     def get(self, request, pk):
         list_ = []
-        course = Course.objects.get(id=pk)
-        account = Account.objects.filter(course=course)
+        course = Course.nodeleted.get(id=pk)
+        account = Account.nodeleted.filter(course=course)
         acc_serializers = AccountSerializers(account, many=True)
         for acc in acc_serializers.data:
-            account = Account.objects.get(id=acc['id'])
+            account = Account.nodeleted.get(id=acc['id'])
             payment = account.payment.all()
             pay_serializers = PaymentSerializers(payment, many=True)
             a_serializers = AccountSerializers(account)
@@ -32,10 +32,10 @@ class CourseDetail(APIView):
 class PaymentAccountView(APIView):
     def get(self, request):
         list_ = []
-        course = Course.objects.all()
+        course = Course.nodeleted.all()
         course_serializers = CourseSerializers(course, many=True)
         for course in course_serializers.data:
-            acoounts = Account.objects.filter(course_id=course['id'])
+            acoounts = Account.nodeleted.filter(course_id=course['id'])
             acc_serializers = AccountSerializers(acoounts, many=True)
             dict_ = dict(course)
             dict_['accounts'] = acc_serializers.data
@@ -51,12 +51,12 @@ class PaymentAccountView(APIView):
 
 class AccountEditView(APIView):
     def get(self, request, pk):
-        account = Account.objects.get(id=pk)
+        account = Account.nodeleted.get(id=pk)
         serializer = AccountSerializers(account)
         return Response(data=serializer.data)
 
     def put(self, request, pk):
-        account = Account.objects.get(id=pk)
+        account = Account.nodeleted.get(id=pk)
         serializer = AccountSerializers(account, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -66,20 +66,20 @@ class AccountEditView(APIView):
 
 class PaymentHistoryView(APIView):
     def get(self, request, pk):
-        account = Account.objects.get(id=pk)
-        payment = Payment.objects.filter(account=account)
+        account = Account.nodeleted.get(id=pk)
+        payment = Payment.nodeleted.filter(account=account)
         serializers = PaymentSerializers(payment, many=True)
         return Response(data=serializers.data)
 
 
 class PaymentEditView(APIView):
     def get(self, request, pk):
-        payment = Payment.objects.get(id=pk)
+        payment = Payment.nodeleted.get(id=pk)
         serializers = PaymentSerializers(payment)
         return Response(data=serializers.data)
 
     def put(self, request, pk):
-        payment = Payment.objects.get(id=pk)
+        payment = Payment.nodeleted.get(id=pk)
         serializer = PaymentSerializers(payment, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -90,13 +90,13 @@ class PaymentEditView(APIView):
 class UnknownAccountView(APIView):
     def get(self, request):
         list_ = []
-        course = Course.objects.filter()
+        course = Course.nodeleted.filter()
         course_serializers = CourseSerializers(course, many=True)
         print(course_serializers.data)
 
         for course in course_serializers.data:
-            acoounts = Account.objects.filter(course_id=course['id'], first_name__contains='unknown',
-                                              last_name__contains='unknown', phone_number__contains='unknown')
+            acoounts = Account.nodeleted.filter(course_id=course['id'], first_name__contains='unknown',
+                                                last_name__contains='unknown', phone_number__contains='unknown')
             acc_serializers = AccountSerializers(acoounts, many=True)
             dict_ = dict(course)
             dict_['unknown_count'] = acoounts.count()
@@ -111,7 +111,7 @@ class CourseLeaveView(APIView):
         courses = Course.objects.all()
         serializers = CourseSerializers(courses, many=True)
         for i in serializers.data:
-            number = Account.objects.filter(course_id=i['id']).count()
+            number = Account.nodeleted.filter(course_id=i['id']).count()
             number -= i['number_student']
             dict_ = dict(i)
             dict_['leave_account'] = number
@@ -121,12 +121,12 @@ class CourseLeaveView(APIView):
 
 class SwappingCourseAccountView(APIView):
     def get(self, request, pk):
-        courses = Course.objects.all()
+        courses = Course.nodeleted.all()
         serializers = CourseSerializers(courses, many=True)
         return Response(data=serializers.data)
 
     def put(self, request, pk):
-        account = Account.objects.get(id=pk)
+        account = Account.nodeleted.get(id=pk)
         serializer = AccountSerializers(account, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -135,5 +135,16 @@ class SwappingCourseAccountView(APIView):
 
 
 class DeleteAccountView(APIView):
+
     def get(self, request, pk):
-        pass
+        account = Account.nodeleted.get(id=pk)
+        serializer = AccountSerializers(account)
+        return Response(data=serializer.data)
+
+    def put(self, request, pk):
+        account = Account.nodeleted.get(id=pk)
+        serializer = AccountSerializers(account, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
