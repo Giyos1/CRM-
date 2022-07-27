@@ -150,3 +150,22 @@ class DeleteAccountView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteAccountListView(APIView):
+    def get(self, request):
+        list_ = []
+        courses = Course.objects.all()
+        serializers = CourseSerializers(courses, many=True)
+        for i in serializers.data:
+            accounts = Account.objects.filter(course_id=i['id'], delete=True)
+            acc_serializers = AccountSerializers(accounts, many=True)
+            dict_ = dict(i)
+            dict_['accounts'] = acc_serializers.data
+            list_.append(dict_)
+        return Response(data=list_)
+
+
+class AccountCountView(APIView):
+    def get(self):
+        pass

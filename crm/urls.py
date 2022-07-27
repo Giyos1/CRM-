@@ -13,5 +13,6 @@ urlpatterns = [
 
     path('swapping/account/<int:pk>/', views.SwappingCourseAccountView.as_view(), name='swapping'),
     path('delete/account/<int:pk>/', views.DeleteAccountView.as_view(), name='delete'),
+    path('deleteaccountlist/', views.DeleteAccountListView.as_view(), name='delete-list'),
 
 ]
