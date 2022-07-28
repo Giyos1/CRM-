@@ -47,7 +47,6 @@ class PaymentAccountView(APIView):
     def post(self, request):
         serializer = PaymentSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
         return Response(data=serializer.data)
 
 
@@ -200,7 +199,12 @@ class AccountCountView(APIView):
 
 class GeneralPaymentHistory(APIView):
     def get(self, request):
+        list_ = []
         payments = Payment.objects.all()
         serializers = PaymentSerializers(payments, many=True)
+        for i in serializers.data:
+            account = Account.objects.get(id=i['account'])
+            i['account'] = AccountSerializers(account).data
+            list_.append(i)
 
-        return Response(serializers.data)
+        return Response(list_)

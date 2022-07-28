@@ -15,8 +15,6 @@ class AccountSerializers(serializers.ModelSerializer):
 
 
 class PaymentSerializers(serializers.ModelSerializer):
-    accounts = AccountSerializers(read_only=True)
-
     class Meta:
         model = Payment
         fields = "__all__"
