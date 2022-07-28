@@ -23,7 +23,7 @@ class Course(models.Model):
 
     @property
     def active_month(self):
-        return self.lesson_number / 12 + 1
+        return int(self.lesson_number / 12) + 1
 
     def __str__(self):
         return self.name
@@ -47,11 +47,17 @@ class Account(models.Model):
 
     @property
     def tolov_oyi(self):
-        return self.course.active_month - self.start_course
+        # print(self.course.active_month - self.start_course)
+        return (self.course.active_month - self.start_course) + 1
 
     @property
     def qarzdorlik(self):
-        pass
+        tolashikerakli_summa = self.tolov_oyi * self.oquvchi_narxi
+        tolangan_summa = 0
+        payments = self.payment.all()
+        for p in payments:
+            tolangan_summa += p.price
+        return tolashikerakli_summa - tolangan_summa
 
     def __str__(self):
         return f"{self.username}({self.course.name})"

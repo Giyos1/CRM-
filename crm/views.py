@@ -166,17 +166,37 @@ class DeleteAccountListView(APIView):
         return Response(data=list_)
 
 
-# class AccountCountView(APIView):
-#     def get(self):
-#         account_number = Account.nodeleted.all().count()
-#         accounts = Account.objects.all()
-#         courses = Course.objects.all()
-#
-#         for c in courses:
-#             active = c.active_month
-#             for i in c.account.all():
-#                 tolov = active - i.start_course
-#                 i.oquvchi_narxi
+class AccountCountView(APIView):
+    def get(self, request):
+        data = {}
+        qarzdorlik_summasi = 0
+        ota_qardorlar = []
+        qarzdorlar = []
+        account_number = Account.nodeleted.exclude(first_name__contains='unknown', last_name__contains='unknown',
+                                                   phone_number__contains='unknown').count()
+        accounts = Account.nodeleted.exclude(first_name__contains='unknown', last_name__contains='unknown',
+                                             phone_number__contains='unknown')
+        for acc in accounts:
+            if acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi > 0:
+                qarzdorlik_summasi += acc.qarzdorlik
+                seria = AccountSerializers(acc)
+                dict_ = dict(seria.data)
+                dict_['qarzi'] = acc.qarzdorlik
+                ota_qardorlar.append(dict_)
+
+            elif acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi < 0:
+                qarzdorlik_summasi += acc.qarzdorlik
+                seria = AccountSerializers(acc)
+                dict_ = dict(seria.data)
+                dict_['qarzi'] = acc.qarzdorlik
+                qarzdorlar.append(dict_)
+
+        data['oquvchi_soni'] = account_number
+        data['qarzdorlik_summasi'] = qarzdorlik_summasi
+        data['ota_qarzdorlar'] = ota_qardorlar
+        data['qarzdorlar'] = qarzdorlar
+        return Response(data=data)
+
 
 class GeneralPaymentHistory(APIView):
     def get(self, request):
