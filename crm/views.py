@@ -166,6 +166,21 @@ class DeleteAccountListView(APIView):
         return Response(data=list_)
 
 
-class AccountCountView(APIView):
-    def get(self):
-        pass
+# class AccountCountView(APIView):
+#     def get(self):
+#         account_number = Account.nodeleted.all().count()
+#         accounts = Account.objects.all()
+#         courses = Course.objects.all()
+#
+#         for c in courses:
+#             active = c.active_month
+#             for i in c.account.all():
+#                 tolov = active - i.start_course
+#                 i.oquvchi_narxi
+
+class GeneralPaymentHistory(APIView):
+    def get(self, request):
+        payments = Payment.objects.all()
+        serializers = PaymentSerializers(payments, many=True)
+
+        return Response(serializers.data)

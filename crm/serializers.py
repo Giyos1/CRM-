@@ -18,5 +18,6 @@ class PaymentSerializers(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = "__all__"
+        depth = 1
 
 

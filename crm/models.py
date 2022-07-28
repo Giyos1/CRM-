@@ -21,6 +21,10 @@ class Course(models.Model):
     lesson_number = models.IntegerField()
     number_student = models.IntegerField(default=1)
 
+    @property
+    def active_month(self):
+        return self.lesson_number / 12 + 1
+
     def __str__(self):
         return self.name
 
@@ -41,6 +45,14 @@ class Account(models.Model):
     objects = models.Manager()
     nodeleted = DeletedManager()
 
+    @property
+    def tolov_oyi(self):
+        return self.course.active_month - self.start_course
+
+    @property
+    def qarzdorlik(self):
+        pass
+
     def __str__(self):
         return f"{self.username}({self.course.name})"
 
@@ -50,6 +62,9 @@ class Payment(models.Model):
     price = models.IntegerField()
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='payment')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created_at',)
 
     def __str__(self):
         return self.account.username
