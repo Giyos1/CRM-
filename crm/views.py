@@ -129,9 +129,16 @@ class SwappingCourseAccountView(APIView):
 
     def put(self, request, pk):
         account = Account.nodeleted.get(id=pk)
+        c_id = request.data['course']
+        course = Course.objects.get(id=c_id)
+        if course.active_month < account.start_course:
+            request.data['start_course'] = course.active_month
+
         serializer = AccountSerializers(account, data=request.data)
+
         if serializer.is_valid():
             serializer.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
