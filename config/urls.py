@@ -22,7 +22,6 @@ urlpatterns = [
     path('api/', include([
         path('', include('crm.urls')),
         path('', include('users.urls')),
-        path('auth/', include('jwt_auth.urls')),
 
     ])),
 ]
