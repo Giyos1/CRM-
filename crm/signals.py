@@ -19,7 +19,6 @@ def creat_course(sender, instance, created, **kwargs):
 
         if instance.lesson_number == 120:
             Course.objects.filter(id=instance.id).update(is_active=False)
-            print(instance.is_active)
 
         if number > 0:
             for i in range(number):
