@@ -6,9 +6,24 @@ from .serializers import CourseSerializers, AccountSerializers, PaymentSerialize
 from .models import Course, Account, Payment
 
 
-class CourseList(ListAPIView):
+class CourseActiveList(ListAPIView):
     serializer_class = CourseSerializers
     queryset = Course.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = Course.objects.filter(is_active=True)
+
+        return queryset
+
+
+class CourseNoActiveList(ListAPIView):
+    serializer_class = CourseSerializers
+    queryset = Course.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = Course.objects.filter(is_active=False)
+
+        return queryset
 
 
 class CourseDetail(APIView):
