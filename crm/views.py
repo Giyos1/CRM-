@@ -216,3 +216,18 @@ class GeneralPaymentHistory(APIView):
             list_.append(i)
 
         return Response(list_)
+
+
+class CourseEditView(APIView):
+    def get(self, request, pk):
+        course = Course.objects.get(id=pk)
+        serializer = CourseSerializers(course)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        course = Course.objects.get(id=pk)
+        serializer = CourseSerializers(course, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

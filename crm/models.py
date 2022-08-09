@@ -16,10 +16,11 @@ class DeletedManager(models.Manager):
 
 class Course(models.Model):
     name = models.CharField(max_length=200)
-    total_price = models.IntegerField()
-    channel_id = models.CharField(max_length=200)
-    lesson_number = models.IntegerField()
+    total_price = models.IntegerField(default=0)
+    channel_id = models.CharField(max_length=200, default=0)
+    lesson_number = models.IntegerField(default=1)
     number_student = models.IntegerField(default=1)
+    is_active = models.BooleanField(default=True)
 
     @property
     def active_month(self):
