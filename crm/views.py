@@ -198,6 +198,7 @@ class AccountCountView(APIView):
                                                    phone_number__contains='unknown').count()
         accounts = Account.nodeleted.exclude(first_name__contains='unknown', last_name__contains='unknown',
                                              phone_number__contains='unknown')
+        delete_account_number = Account.objects.filter(delete=True).count()
         for acc in accounts:
             if acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi > 0:
                 qarzdorlik_summasi += acc.qarzdorlik
@@ -215,6 +216,7 @@ class AccountCountView(APIView):
 
         data['oquvchi_soni'] = account_number
         data['qarzdorlik_summasi'] = qarzdorlik_summasi
+        data['delete_account'] = delete_account_number
         data['ota_qarzdorlar'] = ota_qardorlar
         data['qarzdorlar'] = qarzdorlar
         return Response(data=data)
