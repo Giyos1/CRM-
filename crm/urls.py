@@ -18,5 +18,6 @@ urlpatterns = [
     path('deleteaccountlist/', views.DeleteAccountListView.as_view(), name='delete-list'),
     path('generalpaymenthistory/', views.GeneralPaymentHistory.as_view(), name='paymenthistory'),
     path('statusapi/', views.AccountCountView.as_view(), name='status'),
+    path('payment/<int:pk>/deleteaccount/', views.PaymentDeleteAccountView.as_view(), name='pay'),
 
 ]

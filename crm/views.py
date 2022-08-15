@@ -143,7 +143,7 @@ class SwappingCourseAccountView(APIView):
         return Response(data=serializers.data)
 
     def put(self, request, pk):
-        account = Account.nodeleted.get(id=pk)
+        account = Account.objects.get(id=pk)
         c_id = request.data['course']
         course = Course.objects.get(id=c_id)
         if course.active_month < account.start_course:
@@ -161,12 +161,12 @@ class SwappingCourseAccountView(APIView):
 class DeleteAccountView(APIView):
 
     def get(self, request, pk):
-        account = Account.nodeleted.get(id=pk)
+        account = Account.objects.get(id=pk)
         serializer = AccountSerializers(account)
         return Response(data=serializer.data)
 
     def put(self, request, pk):
-        account = Account.nodeleted.get(id=pk)
+        account = Account.objects.get(id=pk)
         serializer = AccountSerializers(account, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -180,10 +180,17 @@ class DeleteAccountListView(APIView):
         courses = Course.objects.all()
         serializers = CourseSerializers(courses, many=True)
         for i in serializers.data:
+            acc_list = []
+            dict_ = dict(i)
             accounts = Account.objects.filter(course_id=i['id'], delete=True)
             acc_serializers = AccountSerializers(accounts, many=True)
-            dict_ = dict(i)
-            dict_['accounts'] = acc_serializers.data
+            for p in acc_serializers.data:
+                acc = Account.objects.get(id=p['id'])
+                p['umumiy summasi'] = acc.payments
+                p['qarzi'] = acc.delete_qarzdorlik
+                acc_list.append(p)
+            dict_['accounts'] = acc_list
+
             list_.append(dict_)
         return Response(data=list_)
 
@@ -248,3 +255,11 @@ class CourseEditView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PaymentDeleteAccountView(APIView):
+    def post(self, request, pk):
+        serializer = PaymentSerializers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serializer.data)

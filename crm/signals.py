@@ -14,7 +14,7 @@ def creat_course(sender, instance, created, **kwargs):
                 course=instance
             )
     elif not created:
-        number = Account.objects.filter(course=instance).count()
+        number = Account.nodeleted.filter(course=instance).count()
         number = instance.number_student - number
 
         if instance.lesson_number == 120:
@@ -36,3 +36,7 @@ def create_account(sender, instance, created, **kwargs):
         instance.start_course = instance.course.lesson_number / 12 + 1
         instance.oquvchi_narxi = instance.course.total_price
         instance.save()
+
+    if not created:
+        if instance.delete == True:
+            Account.objects.filter(id=instance.id).update(left=instance.course.lesson_number / 12)

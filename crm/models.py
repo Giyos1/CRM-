@@ -38,7 +38,7 @@ class Account(models.Model):
     phone_number = models.CharField(max_length=200)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='account')
     join = models.DateField(default=timezone.now)
-    left = models.DateField(default=timezone.now)
+    left = models.IntegerField(default=0)
     oquvchi_narxi = models.IntegerField(null=True, blank=True)
     start_course = models.IntegerField(null=True, blank=True, default=1)
     delete = models.BooleanField(default=False)
@@ -59,6 +59,19 @@ class Account(models.Model):
         for p in payments:
             tolangan_summa += p.price
         return tolashikerakli_summa - tolangan_summa
+
+    @property
+    def payments(self):
+        summa = 0
+        for i in self.payment.all():
+            summa += i.price
+        return summa
+
+    @property
+    def delete_qarzdorlik(self):
+        number = self.left - self.start_course + 1
+        acc_qarzi = self.oquvchi_narxi * number
+        return acc_qarzi
 
     def __str__(self):
         return f"{self.username}({self.course.name})"
