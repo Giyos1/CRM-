@@ -71,6 +71,7 @@ class Account(models.Model):
     def delete_qarzdorlik(self):
         number = self.left - self.start_course + 1
         acc_qarzi = self.oquvchi_narxi * number
+        acc_qarzi = self.payments-acc_qarzi
         return acc_qarzi
 
     def __str__(self):

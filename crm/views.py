@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, viewsets, permissions
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -203,23 +203,37 @@ class AccountCountView(APIView):
         qarzdorlar = []
         account_number = Account.nodeleted.exclude(first_name__contains='unknown', last_name__contains='unknown',
                                                    phone_number__contains='unknown').count()
-        accounts = Account.nodeleted.exclude(first_name__contains='unknown', last_name__contains='unknown',
-                                             phone_number__contains='unknown')
+        accounts = Account.objects.exclude(first_name__contains='unknown', last_name__contains='unknown',
+                                           phone_number__contains='unknown')
         delete_account_number = Account.objects.filter(delete=True).count()
         for acc in accounts:
-            if acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi > 0:
-                qarzdorlik_summasi += acc.qarzdorlik
-                seria = AccountSerializers(acc)
-                dict_ = dict(seria.data)
-                dict_['qarzi'] = acc.qarzdorlik
-                ota_qardorlar.append(dict_)
+            if not acc.delete:
+                if acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi > 0:
+                    qarzdorlik_summasi += acc.qarzdorlik
+                    seria = AccountSerializers(acc)
+                    dict_ = dict(seria.data)
+                    dict_['qarzi'] = acc.qarzdorlik
+                    ota_qardorlar.append(dict_)
 
-            elif acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi < 0:
-                qarzdorlik_summasi += acc.qarzdorlik
-                seria = AccountSerializers(acc)
-                dict_ = dict(seria.data)
-                dict_['qarzi'] = acc.qarzdorlik
-                qarzdorlar.append(dict_)
+                elif acc.qarzdorlik > 0 and acc.qarzdorlik - acc.oquvchi_narxi < 0:
+                    qarzdorlik_summasi += acc.qarzdorlik
+                    seria = AccountSerializers(acc)
+                    dict_ = dict(seria.data)
+                    dict_['qarzi'] = acc.qarzdorlik
+                    qarzdorlar.append(dict_)
+            else:
+                if acc.delete_qarzdorlik < 0 and acc.delete_qarzdorlik + acc.oquvchi_narxi > 0:
+                    qarzdorlik_summasi += (acc.delete_qarzdorlik) * -1
+                    seria = AccountSerializers(acc)
+                    dict_ = dict(seria.data)
+                    dict_['qarzi'] = acc.delete_qarzdorlik * -1
+                    qarzdorlar.append(dict_)
+                elif acc.delete_qarzdorlik < 0 and acc.delete_qarzdorlik + acc.oquvchi_narxi < 0:
+                    qarzdorlik_summasi += (acc.delete_qarzdorlik) * -1
+                    seria = AccountSerializers(acc)
+                    dict_ = dict(seria.data)
+                    dict_['qarzi'] = acc.delete_qarzdorlik * -1
+                    ota_qardorlar.append(dict_)
 
         data['oquvchi_soni'] = account_number
         data['qarzdorlik_summasi'] = qarzdorlik_summasi
@@ -263,3 +277,9 @@ class PaymentDeleteAccountView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data)
+
+
+class CourseViewSetForBot(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializers
+    permission_classes = [permissions.AllowAny]
